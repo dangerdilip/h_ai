@@ -204,6 +204,6 @@ if user_text or chat_files:
             except Exception as e:
                 error_msg = str(e)
                 if "429" in error_msg or "Quota exceeded" in error_msg:
-                    st.error("Whoa there! 🚦 The AI is currently receiving too many requests and has hit its free tier limit. Please wait about a minute and try again.")
+                    st.error("🚧 The system is currently under maintenance due to high traffic limit. Please come back after 24 hours.")
                 else:
                     st.error("An unexpected error occurred while communicating with the AI. Please try again later.")
