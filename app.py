@@ -161,7 +161,15 @@ if user_text or chat_files:
     if ("am hardik" in user_lower or "i'm hardik" in user_lower or "im hardik" in user_lower) and not st.session_state.is_hardik:
         st.session_state.is_hardik = True
         hardik_activated = True
-    elif (("not hardik" in user_lower) or ("joking" in user_lower) or ("normal form" in user_lower) or ("deactivate" in user_lower) or ("original form" in user_lower) or ("turn off" in user_lower)) and st.session_state.is_hardik:
+    elif (
+        ("not hardik" in user_lower) or 
+        ("joking" in user_lower) or 
+        ("normal form" in user_lower) or 
+        ("deactivate" in user_lower) or 
+        ("original form" in user_lower) or 
+        ("turn off" in user_lower) or
+        (("i am " in user_lower or "im " in user_lower or "i'm " in user_lower) and "hardik" not in user_lower)
+    ) and st.session_state.is_hardik:
         st.session_state.is_hardik = False
         hardik_deactivated = True
 
