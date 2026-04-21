@@ -1,0 +1,12 @@
+# Environment
+venv/
+__pycache__/
+*.pyc
+
+# Secrets
+.streamlit/secrets.toml
+gemini_key
+
+# Local files
+models.txt
+models_list.txt

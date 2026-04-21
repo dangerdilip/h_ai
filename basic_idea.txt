@@ -1,0 +1,588 @@
+# H AI — Personal AI Assistant
+### Complete Project Blueprint & Developer Guide
+> Version 1.0 | Built on Google Gemini | Python + Streamlit
+
+---
+
+## Table of Contents
+
+1. [Project Overview](#1-project-overview)
+2. [Vision & Philosophy](#2-vision--philosophy)
+3. [Core Features](#3-core-features)
+4. [Suggested Additions & Improvements](#4-suggested-additions--improvements)
+5. [UI/UX Design Specification](#5-uiux-design-specification)
+6. [Technical Architecture](#6-technical-architecture)
+7. [File & Folder Structure](#7-file--folder-structure)
+8. [Setup & Installation](#8-setup--installation)
+9. [API Key & Security](#9-api-key--security)
+10. [Feature Implementation Guide](#10-feature-implementation-guide)
+11. [Deployment Guide](#11-deployment-guide)
+12. [Known Limitations & Future Roadmap](#12-known-limitations--future-roadmap)
+
+---
+
+## 1. Project Overview
+
+**H AI** is a personal AI assistant web application built using Python and Streamlit, powered by Google's Gemini AI models. It is designed to go far beyond a simple chatbot — functioning as a multimodal assistant capable of understanding text, images, code, and URLs in a single, unified conversation.
+
+**Name:** H AI
+**Stack:** Python 3.11+ · Streamlit · Google Generative AI SDK
+**Default Mode:** Dark Mode
+**Target User:** Students, developers, professionals, and curious individuals who want a powerful personal AI tool
+
+---
+
+## 2. Vision & Philosophy
+
+H AI is built around three core beliefs:
+
+- **Multimodality First** — Text alone is not enough. A truly useful assistant must see what you see.
+- **Context is King** — Conversations should flow naturally, with the bot remembering what was just discussed.
+- **Simplicity on the Surface, Power Underneath** — The UI stays clean and minimal while the AI works hard behind the scenes.
+
+---
+
+## 3. Core Features
+
+### 3.1 Vision Scanning (Image Analysis)
+Upload any image — a handwritten note, a photo of a plant, a diagram, a screenshot of code, or a receipt. H AI uses Gemini's multimodal capabilities to:
+- Transcribe handwritten text
+- Identify objects, people, scenes, and colors
+- Explain diagrams, charts, or scientific images
+- Debug code from screenshots
+
+**How it works:** The uploaded image is converted to bytes and sent alongside the text prompt to the Gemini API. The model processes both the visual and textual input simultaneously.
+
+### 3.2 Conversational Memory (Session Context)
+H AI remembers the full context of your current conversation session. If you upload a photo of a car and then ask "What color is it?", H AI already knows you are referring to the car in the previous image.
+
+- Memory is stored as a `st.session_state` list of message objects
+- Each message contains a role (`user` or `assistant`) and content (text + optional image)
+- Memory resets when "Clear Chat" is pressed
+
+### 3.3 Web Link Summarization
+Paste any public URL into the chat. H AI will fetch and summarize the webpage content for you.
+
+- Uses Gemini's native grounding features OR Python's `requests` + `BeautifulSoup` for HTML parsing
+- Returns a clean bullet-point or paragraph summary
+- Works with articles, blog posts, documentation pages, and news
+
+### 3.4 Self-Correction Reasoning Mode
+Before delivering a final answer to complex questions (especially math, science, and code), H AI internally reasons through the problem first using a chain-of-thought prompt structure.
+
+- A hidden "thinking step" is performed before the visible answer
+- The thinking step is shown optionally in a collapsible section (`st.expander`)
+- Reduces hallucination on factual or technical queries
+
+### 3.5 Explain Like I'm 5 (ELI5) Toggle
+A toggle switch in the sidebar simplifies the language of responses. When enabled, H AI rewrites complex explanations (especially from image scans like science diagrams or medical charts) in plain, easy-to-understand language.
+
+### 3.6 Code Exporter
+When H AI detects or scans code (from an image or text input), it automatically:
+- Displays it in a formatted syntax-highlighted code block
+- Provides a "Copy Code" button
+- Offers a "Download as .py" button for saving the code locally
+
+### 3.7 Voice-to-Text Input
+A microphone icon in the input bar allows hands-free questioning using Streamlit's WebRTC audio components (`streamlit-webrtc` + `SpeechRecognition` library).
+
+- Records audio from your device's microphone
+- Transcribes it into text and populates the input box automatically
+- Supports English by default; can be extended for multilingual support
+
+---
+
+## 4. Suggested Additions & Improvements
+
+The following features are my recommendations to make H AI stand out significantly from a standard AI chatbot:
+
+### 4.1 Smart File Analyser (PDF & DOCX Support)
+Allow users to upload PDFs, Word documents, and CSV files — not just images.
+
+- **PDF:** Extract text with `PyMuPDF` (fitz) and feed it to Gemini for Q&A, summarization, or analysis
+- **DOCX:** Parse with `python-docx`
+- **CSV/Excel:** Load with `pandas`, generate summaries and visualizations
+- **Why it matters:** Turns H AI into a research and study assistant, not just a chatbot
+
+### 4.2 Smart Response Formatting Toggle
+A sidebar toggle to switch between:
+- **Plain Text Mode** — Clean prose, no markdown
+- **Structured Mode** — Bullet points, headers, tables where appropriate
+- **Code Mode** — Optimized for developer queries with syntax highlighting
+
+### 4.3 Session Export (Download Chat History)
+Add a "Download Chat" button that exports the full conversation as:
+- A `.txt` plaintext file
+- A `.md` Markdown file (formatted cleanly)
+- Optionally a `.pdf` using `fpdf2`
+
+**Why it matters:** Useful for students taking notes or professionals documenting AI-assisted work.
+
+### 4.4 Prompt Templates (Quick Actions)
+Add a row of shortcut buttons above the input bar for one-click prompts:
+
+| Button | Action Triggered |
+|--------|-----------------|
+| 📝 Summarize | "Summarize the image/text I just shared" |
+| 🐛 Debug Code | "Find and explain any bugs in this code" |
+| 🌍 Translate | "Translate this to [selected language]" |
+| 📊 Analyse Data | "Analyse this data and give insights" |
+| 📖 Explain | "Explain this concept simply" |
+
+### 4.5 Language Selector
+A dropdown in the sidebar for the bot to respond in a chosen language: English, Hindi, Spanish, French, Bengali, etc. One setting change, and all responses come in that language.
+
+### 4.6 Dark / Light Mode Toggle
+While Dark Mode is default, add a Light Mode option for users in bright environments. Streamlit's native theming system supports this via `config.toml`.
+
+### 4.7 Character / Tone Selector
+Let users pick H AI's response style:
+- **Professional** — Formal, concise, business-ready
+- **Casual** — Friendly, conversational, relaxed
+- **Academic** — Detailed, cited, structured
+- **ELI5** — Simple and fun (see 3.5)
+
+This can be implemented as a sidebar radio button that modifies the system prompt sent to Gemini.
+
+### 4.8 Image Generation Mode (Future)
+Using Google's Imagen 3 (available via Vertex AI), add a mode where H AI can generate images from text descriptions, extending it from an image analysis tool to a full creative assistant.
+
+### 4.9 Multi-Image Comparison
+Allow upload of two images side-by-side and ask H AI to compare them: "What is different between these two X-rays?" or "Which of these two designs is better and why?"
+
+---
+
+## 5. UI/UX Design Specification
+
+### 5.1 Overall Theme
+- **Default:** Dark Mode (`#0E1117` background, Streamlit default dark theme)
+- **Accent Color:** Electric Blue (`#3A86FF`) for buttons and highlights
+- **Bot Message Background:** `#1E2130`
+- **User Message Background:** `#2A3B5E`
+- **Font:** System default (Streamlit uses Inter)
+
+### 5.2 Sidebar Layout
+
+```
+┌─────────────────────────────┐
+│  ● H AI                     │
+│  🟢 System Online           │
+│                             │
+│  Model:                     │
+│  [ Flash (Fast) ▼ ]         │
+│   • Flash — Speed           │
+│   • Pro — Thinking          │
+│                             │
+│  Response Style:            │
+│  ○ Professional             │
+│  ● Casual                   │
+│  ○ Academic                 │
+│                             │
+│  [🔤] ELI5 Mode   [ OFF ]   │
+│  [🌐] Language  [English ▼] │
+│                             │
+│  [ 🗑️ Clear Chat ]          │
+│  [ 💾 Export Chat ]         │
+└─────────────────────────────┘
+```
+
+### 5.3 Main Chat Window
+
+- Messages displayed in a scrollable container
+- **User messages:** Right-aligned, blue-tinted bubble
+- **Bot messages:** Left-aligned, dark grey bubble with H AI avatar icon
+- **Image thumbnails:** Displayed inside the user bubble (max height 200px, rounded corners)
+- **Code blocks:** Dark background, syntax-highlighted, with Copy button
+- **Thinking steps:** Collapsed by default inside `st.expander("💭 Reasoning...")`
+
+### 5.4 Input Bar (Bottom)
+
+```
+┌──────────────────────────────────────────────────┐
+│  📎  [ Ask me anything...                      ] 🎤│
+└──────────────────────────────────────────────────┘
+```
+
+- 📎 **Paperclip icon** → Opens file uploader for images, PDFs, DOCX, CSV
+- 🎤 **Microphone icon** → Activates voice-to-text input
+- **Enter key** or **Send button** → Submits the message
+
+---
+
+## 6. Technical Architecture
+
+### 6.1 High-Level Flow
+
+```
+User Input (Text + Optional Image/File)
+        │
+        ▼
+  Streamlit Frontend (app.py)
+        │
+        ├─── Image? → Convert to bytes → Attach to Gemini request
+        ├─── URL? → Fetch HTML → Extract text → Attach as context
+        ├─── PDF/DOCX? → Extract text → Attach as context
+        └─── Voice? → Transcribe → Convert to text input
+        │
+        ▼
+  Build Message History (st.session_state)
+        │
+        ▼
+  Google Gemini API (via google-generativeai SDK)
+   ┌────────────────────┐
+   │ Model: Flash / Pro │
+   │ Mode: Multimodal   │
+   └────────────────────┘
+        │
+        ▼
+  Parse & Format Response
+        │
+        ├─── Code detected? → Syntax highlight + export button
+        ├─── ELI5 mode on? → Simplify language
+        └─── Reasoning mode? → Show thinking expander
+        │
+        ▼
+  Render in Chat UI
+```
+
+### 6.2 Key Libraries
+
+| Library | Purpose |
+|---------|---------|
+| `streamlit` | Web UI framework |
+| `google-generativeai` | Gemini API access |
+| `Pillow` | Image processing |
+| `requests` + `beautifulsoup4` | URL fetching & HTML parsing |
+| `PyMuPDF` (fitz) | PDF text extraction |
+| `python-docx` | DOCX file parsing |
+| `pandas` | CSV/Excel data handling |
+| `streamlit-webrtc` | Voice input via browser microphone |
+| `SpeechRecognition` | Audio-to-text transcription |
+| `fpdf2` | (Optional) Export chat as PDF |
+
+### 6.3 Gemini Models Used
+
+| Mode | Model | Use Case |
+|------|-------|---------|
+| Fast | `gemini-2.0-flash` | Everyday questions, quick answers |
+| Thinking | `gemini-2.5-pro` | Complex reasoning, math, analysis |
+
+---
+
+## 7. File & Folder Structure
+
+```
+h-ai/
+│
+├── app.py                  # Main Streamlit application entry point
+├── requirements.txt        # All Python dependencies
+├── .streamlit/
+│   ├── config.toml         # Theme settings (dark mode, colors)
+│   └── secrets.toml        # API keys (NEVER commit to GitHub)
+│
+├── components/
+│   ├── chat_ui.py          # Chat bubble rendering functions
+│   ├── sidebar.py          # Sidebar settings and controls
+│   └── input_bar.py        # Text input, file upload, voice input
+│
+├── utils/
+│   ├── gemini_client.py    # Gemini API wrapper functions
+│   ├── image_handler.py    # Image loading and byte conversion
+│   ├── url_fetcher.py      # URL scraping and text extraction
+│   ├── file_parser.py      # PDF, DOCX, CSV parsing
+│   └── voice_input.py      # Audio transcription logic
+│
+├── assets/
+│   ├── logo.png            # H AI logo
+│   └── avatar_bot.png      # Bot avatar icon for chat bubbles
+│
+└── README.md               # Project readme for GitHub
+```
+
+---
+
+## 8. Setup & Installation
+
+### Step 1: Clone or Create the Project Folder
+```bash
+mkdir h-ai
+cd h-ai
+```
+
+### Step 2: Create a Virtual Environment
+```bash
+python -m venv venv
+# On Windows:
+venv\Scripts\activate
+# On Mac/Linux:
+source venv/bin/activate
+```
+
+### Step 3: Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+**requirements.txt:**
+```
+streamlit>=1.35.0
+google-generativeai>=0.8.0
+Pillow>=10.0.0
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+PyMuPDF>=1.24.0
+python-docx>=1.1.0
+pandas>=2.2.0
+streamlit-webrtc>=0.47.0
+SpeechRecognition>=3.10.0
+fpdf2>=2.7.0
+```
+
+### Step 4: Set Up Your API Key
+Create the secrets file (see Section 9 below).
+
+### Step 5: Run the App
+```bash
+streamlit run app.py
+```
+
+The app will open at `http://localhost:8501`
+
+---
+
+## 9. API Key & Security
+
+### Getting Your Gemini API Key
+1. Go to [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+2. Sign in with your Google account
+3. Click **"Create API Key"**
+4. Copy the key — it will look like: `AIzaSy...`
+
+### Storing the Key Securely
+
+**Create the file:** `.streamlit/secrets.toml`
+```toml
+[gemini]
+api_key = "YOUR_API_KEY_HERE"
+```
+
+**Access it in code:**
+```python
+import streamlit as st
+import google.generativeai as genai
+
+genai.configure(api_key=st.secrets["gemini"]["api_key"])
+```
+
+### ⚠️ Critical Security Rules
+- **NEVER** hardcode your API key directly in `app.py` or any Python file
+- **NEVER** commit `secrets.toml` to GitHub. Add it to `.gitignore` immediately:
+  ```
+  .streamlit/secrets.toml
+  ```
+- If deploying to Streamlit Cloud, use the **Secrets Manager** in the dashboard instead of `secrets.toml`
+
+---
+
+## 10. Feature Implementation Guide
+
+### 10.1 Basic Text Chat
+
+```python
+# utils/gemini_client.py
+import google.generativeai as genai
+import streamlit as st
+
+genai.configure(api_key=st.secrets["gemini"]["api_key"])
+
+def get_response(messages: list, model_name: str = "gemini-2.0-flash") -> str:
+    model = genai.GenerativeModel(model_name)
+    response = model.generate_content(messages)
+    return response.text
+```
+
+### 10.2 Image Analysis
+
+```python
+# utils/image_handler.py
+from PIL import Image
+import io
+
+def load_image(uploaded_file) -> Image.Image:
+    image_bytes = uploaded_file.read()
+    image = Image.open(io.BytesIO(image_bytes))
+    return image
+
+# In app.py — sending image + text to Gemini:
+def analyze_image(image: Image.Image, prompt: str, model_name: str) -> str:
+    model = genai.GenerativeModel(model_name)
+    response = model.generate_content([prompt, image])
+    return response.text
+```
+
+### 10.3 Session Memory
+
+```python
+# In app.py — initialize session state
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Add new message
+st.session_state.messages.append({
+    "role": "user",
+    "content": user_text,
+    "image": uploaded_image  # None if no image
+})
+
+# Build history for Gemini
+def build_gemini_history(messages: list) -> list:
+    history = []
+    for msg in messages:
+        parts = [msg["content"]]
+        if msg.get("image"):
+            parts.append(msg["image"])
+        history.append({
+            "role": msg["role"],
+            "parts": parts
+        })
+    return history
+```
+
+### 10.4 URL Summarization
+
+```python
+# utils/url_fetcher.py
+import requests
+from bs4 import BeautifulSoup
+
+def fetch_url_text(url: str) -> str:
+    try:
+        headers = {"User-Agent": "Mozilla/5.0"}
+        response = requests.get(url, headers=headers, timeout=10)
+        soup = BeautifulSoup(response.text, "html.parser")
+        # Remove scripts and styles
+        for tag in soup(["script", "style", "nav", "footer"]):
+            tag.decompose()
+        text = soup.get_text(separator="\n", strip=True)
+        return text[:8000]  # Trim to avoid token limit
+    except Exception as e:
+        return f"Error fetching URL: {str(e)}"
+```
+
+### 10.5 ELI5 Mode System Prompt
+
+```python
+def get_system_prompt(eli5_mode: bool, tone: str) -> str:
+    base = "You are H AI, a helpful personal assistant."
+    
+    tone_map = {
+        "Professional": "Respond formally, concisely, and professionally.",
+        "Casual": "Respond in a friendly, conversational tone.",
+        "Academic": "Respond with detailed, structured, and well-cited explanations."
+    }
+    
+    eli5_instruction = ""
+    if eli5_mode:
+        eli5_instruction = " Always explain things as simply as possible, as if talking to a 10-year-old. Avoid jargon."
+    
+    return f"{base} {tone_map.get(tone, '')} {eli5_instruction}"
+```
+
+### 10.6 Streamlit Dark Theme Config
+
+```toml
+# .streamlit/config.toml
+[theme]
+base = "dark"
+primaryColor = "#3A86FF"
+backgroundColor = "#0E1117"
+secondaryBackgroundColor = "#1E2130"
+textColor = "#FAFAFA"
+font = "sans serif"
+```
+
+---
+
+## 11. Deployment Guide
+
+### Option A: Streamlit Community Cloud (Free & Recommended)
+
+1. Push your project to a **public GitHub repository** (make sure `secrets.toml` is in `.gitignore`)
+2. Go to [https://share.streamlit.io](https://share.streamlit.io)
+3. Click **"New App"** and connect your GitHub repository
+4. Set `app.py` as the main file
+5. Go to **Advanced Settings → Secrets** and paste your `secrets.toml` content
+6. Click **Deploy**
+
+Your app gets a free public URL: `https://your-app-name.streamlit.app`
+
+### Option B: Local Network Sharing
+
+Run with the `--server.address` flag to share on your local network:
+```bash
+streamlit run app.py --server.address 0.0.0.0 --server.port 8501
+```
+Anyone on the same WiFi can access it at `http://YOUR_IP:8501`
+
+### Option C: Docker
+
+```dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+EXPOSE 8501
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+```
+
+---
+
+## 12. Known Limitations & Future Roadmap
+
+### Current Limitations
+
+| Limitation | Description |
+|-----------|-------------|
+| No persistent memory | Chat history resets when the browser tab is closed |
+| No user accounts | Anyone with the link can use the bot and see the same session |
+| URL scraping limits | Some websites block scraping; paywalled content cannot be fetched |
+| Voice input requires HTTPS | Microphone access needs a secure (HTTPS) connection in browsers |
+| Token limits | Very long conversations may hit Gemini's context window limit |
+
+### Future Roadmap
+
+**Phase 2 — Storage & Accounts**
+- Add SQLite or Firebase for persistent chat history across sessions
+- Basic password-protected user profiles
+
+**Phase 3 — Advanced AI Features**
+- Image generation via Imagen 3
+- Audio file analysis (transcribe and summarize audio recordings)
+- Real-time web search grounding via Gemini's Google Search integration
+- Multi-agent mode: H AI can spawn sub-agents to handle parallel tasks
+
+**Phase 4 — Mobile App**
+- Convert to a Progressive Web App (PWA) for mobile home screen installation
+- Native push notifications for long-running tasks
+
+---
+
+## Quick Start Checklist
+
+- [ ] Python 3.11+ installed
+- [ ] Virtual environment created and activated
+- [ ] `requirements.txt` installed via pip
+- [ ] `.streamlit/secrets.toml` created with Gemini API key
+- [ ] `.streamlit/config.toml` created with dark theme settings
+- [ ] `secrets.toml` added to `.gitignore`
+- [ ] `streamlit run app.py` launches successfully at `localhost:8501`
+- [ ] Test text chat works
+- [ ] Test image upload and analysis works
+- [ ] Test URL paste and summarization works
+- [ ] Deploy to Streamlit Community Cloud
+
+---
+
+*H AI Project Blueprint — Prepared for development reference*
+*Google Gemini · Python 3.11 · Streamlit · Dark Mode · Multimodal*
