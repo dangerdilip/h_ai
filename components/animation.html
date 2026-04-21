@@ -165,8 +165,12 @@
             canvas = document.getElementById("particleCanvas");
             ctx = canvas.getContext("2d");
             
-            canvas.width = 1000;
-            canvas.height = 500;
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
 
             nextWord(words[0]);
             animate();
@@ -304,9 +308,8 @@
             }
 
             frameCount++;
-            // Switch words every 1.5 seconds (90 frames) to speed through sequence
-            // We want it to finish in 5-6 seconds.
-            if (frameCount % 90 === 0) {
+            // Switch words every 2.5 seconds (150 frames) for a slower, more dramatic transition
+            if (frameCount % 150 === 0) {
                 wordIndex = (wordIndex + 1) % words.length;
                 nextWord(words[wordIndex]);
             }

@@ -13,7 +13,7 @@ def check_splash_screen():
         show_splash_screen()
         # Mark as shown
         st.session_state.splash_shown = True
-        time.sleep(6) # Give it 6 seconds to run the animation
+        time.sleep(9.0) # Give it 9 seconds to run the slower animation
         st.rerun() # Refresh to clear it
         return True # It is currently showing
     return False
@@ -27,7 +27,7 @@ def show_splash_screen():
         html_code = f.read()
 
     with placeholder.container():
-        # Inject the custom HTML animation
-        components.html(html_code, height=600)
+        # Inject the custom HTML animation, using larger height for responsiveness
+        components.html(html_code, height=900)
     
     return placeholder

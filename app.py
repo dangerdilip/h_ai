@@ -4,6 +4,16 @@ import time
 # Essential Configuration
 st.set_page_config(page_title="H AI", page_icon="🤖", layout="wide")
 
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            header {visibility: hidden;}
+            .stAppDeployButton {display:none;}
+            footer {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 from components.splash_screen import check_splash_screen
 from components.sidebar import render_sidebar
 from components.chat_ui import render_chat_messages
