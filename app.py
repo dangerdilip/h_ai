@@ -34,6 +34,22 @@ initialize_gemini()
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if "is_hardik" not in st.session_state:
+    st.session_state.is_hardik = False
+
+if st.session_state.is_hardik:
+    golden_css = """
+    <style>
+    /* Golden Theme Overrides */
+    .stApp { background: linear-gradient(135deg, #2a2000 0%, #171100 100%) !important; }
+    .stSidebar { background-color: #140f00 !important; }
+    div[data-testid="stChatMessage"] { background-color: #2a2000 !important; border: 1px solid #ffd700 !important; }
+    h1, h2, h3, p, span, div { color: #fdf5e6 !important; }
+    .stChatInputContainer > div { border: 1px solid #ffd700 !important; background-color: #1a1400 !important; }
+    </style>
+    """
+    st.markdown(golden_css, unsafe_allow_html=True)
+
 # Layout UI
 render_sidebar()
 
@@ -120,6 +136,27 @@ if user_text or chat_files:
     tone = st.session_state.get('tone_choice', 'Casual')
     model_name = st.session_state.get('model_choice', 'gemini-2.5-flash')
     
+    # Intercept Hardik Override
+    user_lower = final_prompt.lower()
+    hardik_activated = False
+    hardik_deactivated = False
+    
+    if ("i am hardik" in user_lower or "i'm hardik" in user_lower) and not st.session_state.is_hardik:
+        st.session_state.is_hardik = True
+        hardik_activated = True
+    elif ("not hardik" in user_lower or "joking" in user_lower) and st.session_state.is_hardik:
+        st.session_state.is_hardik = False
+        hardik_deactivated = True
+
+    if hardik_activated:
+        reply = "Welcome sir, glad to serve you! I have initialized the Golden Override protocols."
+        st.session_state.messages.append({"role": "assistant", "content": reply})
+        st.rerun()
+    elif hardik_deactivated:
+        reply = "Understood sir. Deactivating Golden Override protocols and reverting to original form."
+        st.session_state.messages.append({"role": "assistant", "content": reply})
+        st.rerun()
+
     sys_prompt = get_system_prompt(eli5_mode, tone)
     
     with st.chat_message("assistant", avatar="🤖"):
