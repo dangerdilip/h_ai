@@ -202,4 +202,8 @@ if user_text or chat_files:
                     
                 st.session_state.messages.append({"role": "assistant", "content": response})
             except Exception as e:
-                st.error(f"Error communicating with Gemini: {e}")
+                error_msg = str(e)
+                if "429" in error_msg or "Quota exceeded" in error_msg:
+                    st.error("Whoa there! 🚦 The AI is currently receiving too many requests and has hit its free tier limit. Please wait about a minute and try again.")
+                else:
+                    st.error("An unexpected error occurred while communicating with the AI. Please try again later.")
