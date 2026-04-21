@@ -46,6 +46,23 @@ if st.session_state.is_hardik:
     div[data-testid="stChatMessage"] { background-color: #2a2000 !important; border: 1px solid #ffd700 !important; }
     h1, h2, h3, p, span, div { color: #fdf5e6 !important; }
     .stChatInputContainer > div { border: 1px solid #ffd700 !important; background-color: #1a1400 !important; }
+    
+    /* Golden Button Style */
+    div.stButton > button:first-child {
+        background-color: #ffd700 !important;
+        color: #1a1400 !important;
+        border: 1px solid #ffd700 !important;
+        font-weight: bold !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 6px rgba(255, 215, 0, 0.4) !important;
+        transition: all 0.3s ease !important;
+    }
+    div.stButton > button:first-child:hover {
+        background-color: #1a1400 !important;
+        color: #ffd700 !important;
+        border: 1px solid #ffd700 !important;
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.8) !important;
+    }
     </style>
     """
     st.markdown(golden_css, unsafe_allow_html=True)
@@ -141,10 +158,10 @@ if user_text or chat_files:
     hardik_activated = False
     hardik_deactivated = False
     
-    if ("i am hardik" in user_lower or "i'm hardik" in user_lower) and not st.session_state.is_hardik:
+    if ("am hardik" in user_lower or "i'm hardik" in user_lower or "im hardik" in user_lower) and not st.session_state.is_hardik:
         st.session_state.is_hardik = True
         hardik_activated = True
-    elif ("not hardik" in user_lower or "joking" in user_lower) and st.session_state.is_hardik:
+    elif (("not hardik" in user_lower) or ("joking" in user_lower) or ("normal form" in user_lower) or ("deactivate" in user_lower) or ("original form" in user_lower) or ("turn off" in user_lower)) and st.session_state.is_hardik:
         st.session_state.is_hardik = False
         hardik_deactivated = True
 
