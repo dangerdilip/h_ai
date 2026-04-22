@@ -13,6 +13,9 @@ hide_streamlit_style = """
             /* Hide the bottom-right corner manage/deploy buttons & badges */
             .stAppDeployButton {display:none !important;}
             div[data-testid="stAppDeployButton"] {display:none !important;}
+            [data-testid="manage-app-button"] {display:none !important;}
+            [data-testid="viewerBadge"] {display:none !important;}
+            #stDeployButton {display:none !important;}
             .stDeployButton {display:none !important;}
             .viewerBadge_container {display:none !important;}
             .viewerBadge_link {display:none !important;}
@@ -165,7 +168,7 @@ if user_text or chat_files:
     hardik_activated = False
     hardik_deactivated = False
     
-    if ("am hardik" in user_lower or "i'm hardik" in user_lower or "im hardik" in user_lower) and not st.session_state.is_hardik:
+    if ("hardik" in user_lower and "not" not in user_lower and "who" not in user_lower) and not st.session_state.is_hardik:
         st.session_state.is_hardik = True
         hardik_activated = True
     elif (
