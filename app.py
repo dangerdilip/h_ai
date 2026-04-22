@@ -8,8 +8,15 @@ hide_streamlit_style = """
             <style>
             #MainMenu {visibility: hidden;}
             header {visibility: hidden;}
-            .stAppDeployButton {display:none;}
             footer {visibility: hidden;}
+            
+            /* Hide the bottom-right corner manage/deploy buttons & badges */
+            .stAppDeployButton {display:none !important;}
+            div[data-testid="stAppDeployButton"] {display:none !important;}
+            .stDeployButton {display:none !important;}
+            .viewerBadge_container {display:none !important;}
+            .viewerBadge_link {display:none !important;}
+            div[data-testid="stToolbar"] {display:none !important;}
             </style>
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
