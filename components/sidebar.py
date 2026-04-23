@@ -6,9 +6,9 @@ def render_sidebar():
         st.divider()
         
         st.session_state.model_choice = st.selectbox(
-            "Model",
+            "Brain Engine",
             options=["gemini-2.5-flash", "gemini-2.5-pro"],
-            format_func=lambda x: "⚡ Flash (Fast)" if "flash" in x else "🧠 Pro (Thinking)"
+            format_func=lambda x: "⚡ Hybrid (Llama 3 + Vision)" if "flash" in x else "🧠 Gemini Pro (Thinking)"
         )
         
         st.session_state.tone_choice = st.radio(

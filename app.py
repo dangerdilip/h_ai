@@ -29,6 +29,7 @@ from components.sidebar import render_sidebar
 from components.chat_ui import render_chat_messages
 from components.input_bar import render_quick_actions
 from utils.gemini_client import initialize_gemini, get_system_prompt, get_response
+from utils.groq_client import initialize_groq, get_groq_response
 from utils.image_handler import load_image
 from utils.url_fetcher import fetch_url_text
 from utils.file_parser import process_file_upload
@@ -39,6 +40,10 @@ if check_splash_screen():
 
 # Initialize API
 initialize_gemini()
+try:
+    initialize_groq()
+except Exception:
+    pass # Wait for user to add secrets on Cloud
 
 # Initialize memory
 if "messages" not in st.session_state:
@@ -197,7 +202,14 @@ if user_text or chat_files:
     with st.chat_message("assistant", avatar="🤖"):
         with st.spinner("Thinking..."):
             try:
-                response = get_response(st.session_state.messages, model_name, sys_prompt)
+                # Dynamic Routing: If images are present, we MUST use Google Gemini. 
+                # Otherwise, text queries get rocket-strapped to Llama-3 via Groq!
+                has_image = len(st.session_state.messages[-1].get("images", [])) > 0
+                
+                if has_image or model_name == "gemini-2.5-pro":
+                    response = get_response(st.session_state.messages, model_name, sys_prompt)
+                else:
+                    response = get_groq_response(st.session_state.messages, sys_prompt)
                 
                 parts = str(response).split("<think>")
                 if len(parts) > 1 and "</think>" in parts[1]:
