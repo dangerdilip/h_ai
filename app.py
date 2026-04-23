@@ -224,10 +224,4 @@ if user_text or chat_files:
                     
                 st.session_state.messages.append({"role": "assistant", "content": response})
             except Exception as e:
-                error_msg = str(e)
-                if "'groq_client'" in error_msg:
-                    st.error("🔑 System Error: the Groq API Key has not been loaded correctly from your Streamlit Secrets. Please check the spelling or reboot the app!")
-                elif "429" in error_msg or "Quota exceeded" in error_msg:
-                    st.error("🚧 The system is currently under maintenance due to high traffic limit. Please come back after 24 hours.")
-                else:
-                    st.error(f"Error Diagnostic: {error_msg}")
+                st.error("🚧 Traffic Overload! The neural link is currently saturated. We have automatically notified the System Administrator. Please try again shortly.")
