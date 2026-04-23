@@ -225,7 +225,9 @@ if user_text or chat_files:
                 st.session_state.messages.append({"role": "assistant", "content": response})
             except Exception as e:
                 error_msg = str(e)
-                if "429" in error_msg or "Quota exceeded" in error_msg:
+                if "'groq_client'" in error_msg:
+                    st.error("🔑 System Error: the Groq API Key has not been loaded correctly from your Streamlit Secrets. Please check the spelling or reboot the app!")
+                elif "429" in error_msg or "Quota exceeded" in error_msg:
                     st.error("🚧 The system is currently under maintenance due to high traffic limit. Please come back after 24 hours.")
                 else:
-                    st.error("An unexpected error occurred while communicating with the AI. Please try again later.")
+                    st.error(f"Error Diagnostic: {error_msg}")

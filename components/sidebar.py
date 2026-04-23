@@ -5,11 +5,8 @@ def render_sidebar():
         st.markdown("### 🟢 H AI System Online")
         st.divider()
         
-        st.session_state.model_choice = st.selectbox(
-            "Brain Engine",
-            options=["gemini-2.5-flash", "gemini-2.5-pro"],
-            format_func=lambda x: "⚡ Hybrid (Llama 3 + Vision)" if "flash" in x else "🧠 Gemini Pro (Thinking)"
-        )
+        # Silently set the engine in the background to hybrid without showing it
+        st.session_state.model_choice = "gemini-2.5-flash"
         
         st.session_state.tone_choice = st.radio(
             "Response Style",
