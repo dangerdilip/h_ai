@@ -27,7 +27,7 @@ def get_groq_response(messages: list, sys_prompt: str) -> str:
         
     chat_completion = client.chat.completions.create(
         messages=formatted_messages,
-        model="llama3-70b-8192",
+        model="llama-3.3-70b-versatile",
         temperature=0.7,
         max_tokens=4096,
         top_p=1,
